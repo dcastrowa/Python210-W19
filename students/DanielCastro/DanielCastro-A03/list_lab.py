@@ -1,7 +1,11 @@
 # !/usr/bin/env python3
+
+# ------------------------------------------------ #
 # Title: List Lab
 # Change Log: (Who,What,When)
 # dcastrowa, created and completed file, 01/28/19
+# ------------------------------------------------ #
+
 fruits = ['Apples', 'Pears', 'Oranges', 'Peaches']
 
 print('SERIES 1')
@@ -44,4 +48,10 @@ for fruit in fruits:
             answer = input('Choose "yes" or "no" ')
         break
 print(fruits)
+print('=' * 40)
 
+print('SERIES 4')
+print('=' * 40)
+for fruit in fruits:
+    print(fruit[::-1])
+print('=' * 40)
