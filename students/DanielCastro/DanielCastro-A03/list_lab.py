@@ -52,6 +52,10 @@ print('=' * 40)
 
 print('SERIES 4')
 print('=' * 40)
+new_fruits = []
 for fruit in fruits:
-    print(fruit[::-1])
+    new_fruit = fruit[::-1]
+    new_fruits.append(new_fruit)
+print('Original list: \n{}'.format(fruits))
+print('New list: \n{}'.format(new_fruits))
 print('=' * 40)
