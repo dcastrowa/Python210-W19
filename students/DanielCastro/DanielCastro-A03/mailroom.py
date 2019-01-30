@@ -3,7 +3,8 @@
 # ------------------------------------------------ #
 # Title: String Format Lab
 # Change Log: (Who,What,When)
-# dcastrowa, created and completed file, 01/28/19
+# dcastrowa, created file, 01/28/19
+# dcastrowa, completed file, 01/29/19
 # ------------------------------------------------ #
 
 # It should have a data structure that holds a list of your donors and a history of the amounts
@@ -21,6 +22,20 @@ donor3 = ['Charlie Brown', 420.45, 250.67]
 donor4 = ['Scooby Doo', 2000.60, 500.84]
 donor5 = ['Luke Skywalker', 340.55, 67.89, 900.00]
 donor_db = [donor1, donor2, donor3, donor4, donor5]
+names = []
+donation1 = []
+donation2 = []
+donation3 = []
+
+for donor in donor_db:
+    try:
+        names.append(donor[0])
+        donation1.append(donor[1])
+        donation2.append(donor[2])
+        donation3.append(donor[3])
+    except IndexError:
+        pass
+
 prompt_msg = '\n'.join(('Enter a # option:',
                         '1 -- Send a Thank you',
                         '2 -- Create a Report',
@@ -29,20 +44,38 @@ prompt_msg = '\n'.join(('Enter a # option:',
 
 
 def thank_you():
-    response = input('Enter donor full name: ')
-    for donor in donor_db:
-            if response != donor:
-                donor_db.append(response)
+    while True:
+        response = input('Enter donor full name: ')
+        if response == 'list':
+            print(names)
+            continue
+        elif response not in names:
+            donor_db.append([response.title()])
+            donation_amount = float(input('Enter donation amount: '))
+            donor_db[-1].append(donation_amount)
+            print('Thank you, {} for donating ${:.2f}'.format(donor_db[-1][0], donor_db[-1][1]))
+            break
 
-    # if response == 'list':
-    #     for donor in donor_db:
-    #         print(donor[0])
 
-
+def report():
+    print('{:<25}{:<25}{:<25}{:<25}'.format('Donor', 'Average', 'Num of Gifts', 'Total'))
+    print('=' * 100)
+    for name in donor_db:
+        print('{:<25}${:<25.2f}{:<25}${:<25}'.format(name[0], sum(name[1:])/len(name[1:]), len(name[1:]), sum(name[1:])))
 
 
 def main():
-    response = input(prompt_msg)
+    while True:
+        response = input(prompt_msg)
+        if response == '1':
+            thank_you()
+        elif response == '2':
+            report()
+        elif response == '3':
+            input('Press enter to quit.')
+            break
+        else:
+            print('Not an option. Choose 1-3')
 
 
 if __name__ == '__main__':
