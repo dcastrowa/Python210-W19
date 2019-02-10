@@ -1,0 +1,8 @@
+Dear Luke Skywalker:
+Thank you for donating $(340.55, 67.89, 900.0).
+We appreciate your contribution!
+
+
+
+Sincerely,
+DonationCentral Inc.

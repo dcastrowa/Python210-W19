@@ -1,0 +1,8 @@
+Dear Scooby Doo:
+Thank you for donating $(2000.6, 500.84).
+We appreciate your contribution!
+
+
+
+Sincerely,
+DonationCentral Inc.

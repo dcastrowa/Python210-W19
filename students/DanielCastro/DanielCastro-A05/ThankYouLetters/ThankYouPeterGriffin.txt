@@ -1,0 +1,8 @@
+Dear Peter Griffin:
+Thank you for donating $(865.23, 910.06, 454.25).
+We appreciate your contribution!
+
+
+
+Sincerely,
+DonationCentral Inc.

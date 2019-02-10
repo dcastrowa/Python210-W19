@@ -27,14 +27,24 @@ format_line = ('=' * 75)
 
 
 def create_email(name, donation):
-        letter = ('Dear {}:\nThank you for donating ${}.\n'
-                  'We appreciate your contribution!\n\n\n\n'
-                  'Sincerely,\n'
-                  'DonationCentral Inc.'.format(name, donation))
-        return letter
+    """
+    Creates a template email to send to donors.
+    :param (str) name: name of donor
+    :param (int) donation: dollar amount for donation
+    :return (str): complete template email
+    """
+    letter = ('Dear {}:\nThank you for donating ${}.\n'
+              'We appreciate your contribution!\n\n\n\n'
+              'Sincerely,\n'
+              'DonationCentral Inc.'.format(name, donation))
+    return letter
 
 
 def write_letters():
+    """
+    Writes out new .txt files to created directory
+    :return: no return
+    """
     cwd = os.getcwd()
     try:
         os.mkdir('ThankYouLetters')
@@ -56,6 +66,10 @@ def write_letters():
 
 
 def thank_you():
+    """
+    gives
+    :return:
+    """
     response = input('list -- view all donors\n'
                      'first name last name -- add new donation\n')
     while True:

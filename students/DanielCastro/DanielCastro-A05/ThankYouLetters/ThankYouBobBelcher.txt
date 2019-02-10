@@ -1,0 +1,8 @@
+Dear Bob Belcher:
+Thank you for donating $(400.5, 250.46).
+We appreciate your contribution!
+
+
+
+Sincerely,
+DonationCentral Inc.
