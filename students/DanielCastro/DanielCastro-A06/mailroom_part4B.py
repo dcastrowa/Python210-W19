@@ -65,20 +65,21 @@ def write_letters():
     os.chdir(cwd)
 
 
+def list_of_donors():
+    donors_listing = 'DONORS: \n'
+    donors_listing += format_line + '\n'
+    for key in donors_db.keys():
+        donors_listing += key + '\n'
+    donors_listing += format_line
+    return donors_listing
+
+
 def thank_you():
-    """
-    gives
-    :return:
-    """
     response = input('list -- view all donors\n'
                      'first name last name -- add new donation\n')
     while True:
         if response == 'list':
-            print('DONORS: ')
-            print(format_line)
-            for key in donors_db.keys():
-                print(key)
-            print(format_line)
+            print(list_of_donors())
             break
         else:
             try:
