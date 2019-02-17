@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 # ----------------------------------------------------------- #
-# Title: Mail Room Part 3
+# Title: Mail Room Part 4
 # Change log: (Who, When, What)
-# dcastrowa, 02/10/2019, created file
+# dcastrowa, 02/16/2019, created file
 # ----------------------------------------------------------- #
 import os
 import io
@@ -20,7 +20,7 @@ prompt_msg = '\n'.join(('Enter a # option:',
                         '1 -- Send a Thank you',
                         '2 -- Create a Report',
                         '3 -- Send letter to all donors',
-                        '4 -- quit',
+                        '4 -- Quit',
                         ''))
 
 format_line = ('=' * 75)
@@ -51,7 +51,7 @@ def write_letters():
         os.chdir('ThankYouLetters')
     except FileExistsError:
         print('File already exists. Create new directory.')
-        new_dir = input('New directory name: ')
+        new_dir = 'ThankYouLetters1'
         os.mkdir(new_dir)
         os.chdir(new_dir)
 
@@ -59,26 +59,27 @@ def write_letters():
         file_name = ('ThankYou{}.txt'.format(name.replace(' ', '')))
         open(file_name, 'a').close()
         new_file = io.open(file_name, 'w')
-        new_file.write(create_email(name, donation))
+        new_file.write(create_email(name, int(donation[-1])))
         new_file.close()
 
     os.chdir(cwd)
 
 
+def list_of_donors():
+    donors_listing = 'DONORS: \n'
+    donors_listing += format_line + '\n'
+    for key in donors_db.keys():
+        donors_listing += key + '\n'
+    donors_listing += format_line
+    return donors_listing
+
+
 def thank_you():
-    """
-    gives
-    :return:
-    """
     response = input('list -- view all donors\n'
                      'first name last name -- add new donation\n')
     while True:
         if response == 'list':
-            print('DONORS: ')
-            print(format_line)
-            for key in donors_db.keys():
-                print(key)
-            print(format_line)
+            print(list_of_donors())
             break
         else:
             try:
@@ -95,6 +96,7 @@ def add_donation(response, record, donation):
         record[response] += donation,
     else:
         record[response] = donation,
+    return record
 
 
 def get_report(database):
@@ -107,8 +109,8 @@ def get_report(database):
     return final_report
 
 
-def display_report(x=get_report(donors_db)):
-    print(x)
+def display_report():
+    print(get_report(donors_db))
 
 
 def quit_program():
@@ -129,7 +131,7 @@ def main():
         try:
             response = input(prompt_msg)
             user_response(response)
-        except:
+        except TypeError:
             print('Not an option. Enter a valid response.')
 
 
