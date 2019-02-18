@@ -85,7 +85,6 @@ def report():
 
 def quit_program():
     input('Press enter to quit.')
-    pass
 
 
 def user_choice(choice):
@@ -96,20 +95,15 @@ def user_choice(choice):
     return switch_func_dict.get(choice, 'NA')
 
 
+def user_response(choice):
+    options = {'1': thank_you, '2': report, '3': write_letters, '4': quit_program}
+    return options.get(choice)()
+
+
 def main():
     while True:
         response = input(prompt_msg)
-        if response == '1':
-            thank_you()
-        elif response == '2':
-            report()
-        elif response == '3':
-            write_letters(donors_db)
-        elif response == '4':
-            input('Press enter to quit.')
-            break
-        else:
-            print('Not an option. Choose 1-4')
+        user_response(response)
 
 
 if __name__ == '__main__':

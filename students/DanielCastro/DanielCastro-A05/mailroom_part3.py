@@ -79,6 +79,7 @@ def thank_you():
             for key in donors_db.keys():
                 print(key)
             print(format_line)
+            break
         else:
             try:
                 donation_amount = int(input('Enter donation amount: $'))
@@ -87,22 +88,6 @@ def thank_you():
                 break
             except ValueError:
                 print('Enter a number value')
-        # elif response in donors_db:
-        #     try:
-        #         donation_amount = int(input('Enter donation amount: $'))
-        #         donors_db[response] += donation_amount,
-        #         print(create_email(response, donation_amount))
-        #         break
-        #     except ValueError:
-        #         print('Enter a number value.')
-        # else:
-        #     try:
-        #         donation_amount = int(input('Enter donation amount: $'))
-        #         donors_db[response] = donation_amount,
-        #         print(create_email(response, donation_amount))
-        #         break
-        #     except ValueError:
-        #         print('Enter a number value.')
 
 
 def add_donation(response, record, donation):
@@ -112,12 +97,18 @@ def add_donation(response, record, donation):
         record[response] = donation,
 
 
-def report():
-    print('{:<25}{:<25}{:<25}{:<25}'.format('Donor', 'Average', 'Num of Gifts', 'Total'))
-    print('=' * 100)
-    for name, amounts in donors_db.items():
-        print('{:<25}${:<25.2f}{:<25}${:<25}'.format(name, sum(amounts)/len(amounts), len(amounts), sum(amounts)))
-    print('=' * 100)
+def get_report(database):
+    final_report = '{:<25}{:<25}{:<25}{:<25}\n'.format('Donor', 'Average', 'Num of Gifts', 'Total')
+    final_report += '=' * 100 + '\n'
+    for name, amounts in database.items():
+        final_report += '{:<25}${:<25.2f}{:<25}${:<25}\n'.format(name, sum(amounts) / len(amounts), len(amounts),
+                                                                 sum(amounts))
+    final_report += '=' * 100
+    return final_report
+
+
+def display_report(x=get_report(donors_db)):
+    print(x)
 
 
 def quit_program():
@@ -127,7 +118,7 @@ def quit_program():
 
 def user_response(choice):
     options = {'1': thank_you,
-               '2': report,
+               '2': display_report,
                '3': write_letters,
                '4': quit_program}
     return options.get(choice)()

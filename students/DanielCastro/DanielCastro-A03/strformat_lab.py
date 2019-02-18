@@ -3,7 +3,7 @@
 # ------------------------------------------------ #
 # Title: String Format Lab
 # Change Log: (Who,What,When)
-# dcastrowa, created file, 01/28/19
+# dcastrowa, created and completed file, 01/28/19
 # ------------------------------------------------ #
 
 num1 = 2

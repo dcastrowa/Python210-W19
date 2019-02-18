@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 
 # ------------------------------------------------ #
 # Title: String Format Lab
@@ -41,17 +41,25 @@ prompt_msg = '\n'.join(('Enter a # option:',
                         '2 -- Create a Report',
                         '3 -- quit',
                         ''))
+format_line = ('=' * 75)
 
 
 def thank_you():
     while True:
-        response = input('Enter donor full name: ')
+        response = input('Enter "list" or donor full name: ')
         if response == 'list':
-            print(names)
-            continue
+            print('DONORS: ')
+            format_line
+            for donors in donor_db:
+                print(donors[0])
+        elif response in names:
+            donation_amount = float(input('Enter donation amount: $'))
+            for name in donor_db:
+                if response == name[0]:
+                    name.append(donation_amount)
         elif response not in names:
             donor_db.append([response.title()])
-            donation_amount = float(input('Enter donation amount: '))
+            donation_amount = float(input('Enter donation amount: $'))
             donor_db[-1].append(donation_amount)
             print('Thank you, {} for donating ${:.2f}'.format(donor_db[-1][0], donor_db[-1][1]))
             break

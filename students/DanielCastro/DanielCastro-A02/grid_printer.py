@@ -39,5 +39,5 @@ def print_grid2(n, n2):
 # ----- Presentation ----- #
 
 
-print_grid(3)
-print_grid2(4, 3)
+
+print_grid2(5, 4)
