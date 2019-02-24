@@ -11,14 +11,40 @@ class Element(object):
     tag = 'html'
 
     def __init__(self, content=None):
-        self.contents = [content]
+        if content is None:
+            self.contents = []
+        else:
+            self.contents = [content]
 
     def append(self, new_content):
         self.contents.append(new_content)
 
     def render(self, out_file):
-        out_file.write("just something as a place holder...")
+        out_file.write('<{}>\n'.format(self.tag))
+        for content in self.contents:
+            try:
+                content.render(out_file)
+            except AttributeError:
+                out_file.write(content)
+            out_file.write('\n')
+        out_file.write('</{}>\n'.format(self.tag))
+
 
 class Html(Element):
 
-    def __init__(self, content=None):
+    tag = 'html'
+
+
+class Body(Element):
+
+    tag = 'body'
+
+
+class P(Element):
+
+    tag = 'p'
+
+
+class Head(Element):
+
+    tag = 'head'
