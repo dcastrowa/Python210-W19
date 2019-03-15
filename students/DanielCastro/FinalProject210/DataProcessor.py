@@ -1,13 +1,15 @@
+# Desc: Python 210 Final Simple Data Processor
+# ChangeLog: (When,Who,What)
+# 2/28/19,RRoot,Created Script
+
 import sqlite3
 from sqlite3 import Error as sqlErr
 import re as rex
 
-debugIP = True
-
 
 class DBProcessor(object):
 
-    def __init__(self, db_name: str = ":memory:"):  # Handy for testing!
+    def __init__(self, db_name: str=":memory:"):
         self.__db_name = db_name
         self.__db_con = self.create_connection(self.db_name)
 
@@ -19,7 +21,9 @@ class DBProcessor(object):
     def db_con(self):  # Get Live Connection
         return self.__db_con
 
+
     # SQL Validators
+
     @staticmethod
     def check_for_extra_semicolon(sql_str):
         """Checks for an extra semicolon"""
@@ -37,45 +41,28 @@ class DBProcessor(object):
         # print(rex.search("or","FROM T1 WHERE ID = 1 or 1 = 1".split('WHERE')[1], rex.IGNORECASE))
         try:
             if rex.search("WHERE", sql_str, rex.IGNORECASE):  # If it has a Where clause
-                if rex.search(' or ', sql_str.split('WHERE')[1], rex.IGNORECASE) is not None:  # injected OR?
+                if rex.search(' or ', sql_str.split('WHERE')[1], rex.IGNORECASE) is not None:  # check for injected OR
                     raise sqlErr("OR Detected!")
         except Exception as e:
             raise e
 
     @staticmethod
-    def check_for_str_type(sql_str):
-        try:
-            if sql_str is not str:
-                raise sqlErr('Must be a string type')
-        except Exception as e:
-            raise e
-
-    @staticmethod
-    def check_for_int_type(sql_str):
-        try:
-            if sql_str is not int:
-                raise sqlErr('Must be an integer')
-        except Exception as e:
-            raise e
-
-    @staticmethod
     def check_for_date(date_str):
-        """Checks for an valid date string"""
         try:
-            if rex.match(r"\d\d\d\d-\d\d-\d\d", str(date_str)) is None:
+            if rex.match("\d\d\d\d-\d\d-\d\d", str(date_str)) is None:
                 raise sqlErr("Not a Date!")
         except Exception as e:
             raise e
 
     def create_connection(self, db_file: str):
-            """ Create or connect to a SQLite database """
-            try:
-                con = sqlite3.connect(db_file)
-            except sqlErr as se:
-                raise Exception('SQL Error in create_connection(): ' + se.__str__())
-            except Exception as e:
-                raise Exception('General Error in create_connection(): ' + e.__str__())
-            return con
+        """ Create or connect to a SQLite database """
+        try:
+            con = sqlite3.connect(db_file)
+        except sqlErr as se:
+            raise Exception('SQL Error in create_connection(): ' + se.__str__())
+        except Exception as e:
+            raise Exception('General Error in create_connection(): ' + e.__str__())
+        return con
 
     def execute_sql_code(self, sql_code: str = ''):
         """ Execute SQL code on a open connection """
@@ -83,8 +70,8 @@ class DBProcessor(object):
         try:
             if db_con is not None and sql_code != '':
                 # Validate
-                self.check_for_extra_semicolon(sql_code)
-                self.check_for_or(sql_code)
+                self.check_for_extra_semicolon(sql_code);
+                self.check_for_or(sql_code);
                 # Connect and Run
                 with db_con:
                     csr = db_con.cursor()
@@ -99,25 +86,27 @@ class DBProcessor(object):
 
     def build_ins_code(self):
         # Validate Input
+        # Build Code
         sql = str.format("INSERT Not Implemented Yet")
         return sql
 
     def build_upd_code(self):
         # Validate Input
+        # Build Code
         sql = str.format("UPDATE Not Implemented Yet")
         return sql
 
     def build_del_code(self):
         # Validate Input
-        # Validate Input
+        # Build Code
         sql = str.format("DELETE Not Implemented Yet")
         return sql
 
     def build_sel_code(self):
         # Validate Input
+        # Build Code
         sql = str.format("SELECT Not Implemented Yet")
         return sql
-
 
 class InventoryProcessor(DBProcessor):
 
@@ -128,7 +117,7 @@ class InventoryProcessor(DBProcessor):
         return sql
 
     def build_upd_code(self, inventory_id: int, inventory_date: str ):
-        DBProcessor.check_for_date()
+        DBProcessor.check_for_date(inventory_date)
         sql = str.format("UPDATE Inventories SET InventoryDate = '{date}' "
                          "WHERE InventoryID = {id};", id=inventory_id, date=inventory_date)
         return sql
@@ -147,8 +136,7 @@ class InventoryProcessor(DBProcessor):
                          "FROM Inventories{WHERE};", WHERE=w)
         return sql
 
-
-class ProductsProcessor(DBProcessor):
+class ProductProcessor(DBProcessor):
 
     def build_ins_code(self, product_id: int, product_name: str):
         sql = str.format("INSERT INTO Products (ProductID, ProductName) "
@@ -175,139 +163,33 @@ class ProductsProcessor(DBProcessor):
         return sql
 
 
-class InventoryCountsProcessor(DBProcessor):
+class InventoryCountProcessor(DBProcessor):
 
-    def build_ins_code(self, inv_count_id: int, product_id: int, count: int):
-        sql = str.format("INSERT INTO InventoryCounts (InventoryCountID, ProductID, Count) "
-                         "VALUES ({id},{pid},{count});", id=inv_count_id, pid=product_id, count=count)
+    def build_ins_code(self, inventory_id: int, product_id: int, count: int):
+        sql = str.format("INSERT INTO InventoryCounts (InventoryID, ProductID, Count) "
+                         "VALUES ({iid}, {pid},'{cnt}');", iid=inventory_id, pid=product_id, cnt=count)
         return sql
 
-    def build_upd_code(self, inv_count_id: int, product_id: str, count: int):
-        sql = str.format("UPDATE InventoryCounts SET Count = '{count}' "
-                         "WHERE InventoryCountID = {id};", id=inv_count_id, count=count)
+    def build_upd_code(self, inventory_id: int, product_id: int, count: int):
+        sql = str.format("UPDATE InventoryCounts SET Count = {cnt} "
+                         "WHERE InventoryID = {iid} "
+                         "AND ProductID = {pid};", iid=inventory_id, pid=product_id, cnt=count)
         return sql
 
-    def build_del_code(self, inv_count_id: int):
+    def build_del_code(self, inventory_id: int, product_id: int):
         sql = str.format("DELETE FROM InventoryCounts "
-                         "WHERE InventoryCountID = {id};", id=inv_count_id)
+                         "WHERE InventoryID = {iid} AND ProductID = {pid};", iid=inventory_id, pid=product_id)
         return sql
 
-    def build_sel_code(self, inv_count_id: int = None):
-        if inv_count_id is not None:
-            w = ' WHERE InventoryCountID = ' + str(inv_count_id)
+    def build_sel_code(self, inventory_id: int = None, product_id: int = None):
+        if inventory_id is not None and product_id is None:
+            w = ' WHERE InventoryID = ' + str(inventory_id)
+        elif inventory_id is None and product_id is not None:
+            w = ' WHERE ProductID = ' + str(product_id)
+        elif inventory_id is not None and product_id is not None:
+            w = ' WHERE InventoryID = ' + str(inventory_id) + ' AND ProductID = ' + str(product_id)
         else:
             w = ''
-        sql = str.format("SELECT InventoryCountID, ProductID, Count "
+        sql = str.format("SELECT InventoryId, ProductID, Count "
                          "FROM InventoryCounts{WHERE};", WHERE=w)
         return sql
-
-
-if __name__ == '__main__':
-
-    # Test DataProcessor methods
-    # try:
-    #     DBProcessor.check_for_or("SELECT * FROM T1 WHERE ID = 1 or 1 = 1")
-    # except Exception as e:
-    #     print(e)
-    # try:
-    #     DBProcessor.check_for_extra_semicolon("SELECT * ;Delete From T1; FROM T1;")
-    # except Exception as e:
-    #     print(e)
-    # try:
-    #     DBProcessor.check_for_date('01/01/2000')
-    # except Exception as e:
-    #     print(e)
-    #
-    # dbp = DBProcessor(':memory:')
-    # print(dbp.build_ins_code())
-    # print(dbp.build_upd_code())
-    # print(dbp.build_del_code())
-    # print(dbp.build_sel_code())
-    # print(dbp.build_sel_code())
-    # dbp.db_con.close()
-
-    if debugIP:
-                          # ----- Debug InventoryProcessor -----
-        # ip = InventoryProcessor(':memory:')
-        # print(ip.build_ins_code(inventory_id=1, inventory_date='2000-01-01'))
-        # print(ip.build_upd_code(inventory_id=1, inventory_date='2000-02-02'))
-        # print(ip.build_del_code(inventory_id=1))
-        # print(ip.build_sel_code())
-        #
-        # # Create a table for testing
-        # crs = ip.db_con.cursor()
-        # crs.execute("CREATE TABLE Inventories (InventoryID int, InventoryDate date);")
-        # ip.db_con.commit()
-        # for row in crs.execute("Select name, sql From sqlite_master Where type='table;'"):
-        #     print(row)
-        # ip.db_con.commit()
-        #
-        # # Test SQL Transactions
-        # ip.execute_sql_code(ip.build_ins_code(inventory_id=1, inventory_date='2000-01-01')).close()
-        # for row in ip.execute_sql_code(ip.build_sel_code()):
-        #     print(row)
-        #
-        # ip.execute_sql_code(ip.build_upd_code(inventory_id=1, inventory_date='2000-02-02')).close()
-        # for row in ip.execute_sql_code(ip.build_sel_code(inventory_id=1)):
-        #     print(row)
-        #
-        # ip.execute_sql_code(ip.build_del_code(inventory_id=1)).close()
-        # for row in ip.execute_sql_code(ip.build_sel_code()):
-        #     print(row)
-        #
-        #                 #  ----- Debug ProductsProcessor -----
-        # pp = ProductsProcessor('/Users/danielcastro/Documents/sqlite-tools-osx-x86-3270200/databases/pp_test.db')
-        # print(pp.build_ins_code(product_id=10, product_date='2019-02-14'))
-        # print(pp.build_upd_code(product_id=10, product_date='2019-04-11'))
-        # print(pp.build_del_code(product_id=10))
-        # print(pp.build_sel_code())
-        #
-        # # Create a table for testing
-        # crs = pp.db_con.cursor()
-        # crs.execute("CREATE TABLE Products (ProductID int, ProductDate date);")
-        # pp.db_con.commit()
-        # for row in crs.execute("Select name, sql From sqlite_master Where type='table;'"):
-        #     print(row)
-        # pp.db_con.commit()
-        #
-        # # Test SQL Transactions
-        # pp.execute_sql_code(pp.build_ins_code(product_id=10, product_date='2019-02-14')).close()
-        # for row in pp.execute_sql_code(pp.build_sel_code()):
-        #     print(row)
-        #
-        # pp.execute_sql_code(pp.build_upd_code(product_id=10, product_date='2019-04-11')).close()
-        # for row in pp.execute_sql_code(pp.build_sel_code(product_id=1)):
-        #     print(row)
-        #
-        # pp.execute_sql_code(pp.build_del_code(product_id=10)).close()
-        # for row in pp.execute_sql_code(pp.build_sel_code()):
-        #     print(row)
-
-                        #  ----- Debug InventoryCountsProcessor -----
-        icp = InventoryCountsProcessor('/Users/danielcastro/Documents/sqlite-tools-osx-x86-3270200/'
-                                       'databases/icp_test.db')
-        # print(icp.build_ins_code(inv_count_id=11101011, inv_count_date='2019-02-14'))
-        # print(icp.build_upd_code(inv_count_id=11101011, inv_count_date='2019-04-11'))
-        # print(icp.build_del_code(inv_count_id=11101011))
-        # print(icp.build_sel_code())
-
-        # Create a table for testing
-        # crs = icp.db_con.cursor()
-        # crs.execute("CREATE TABLE InventoryCounts (InventoryCountID int, InventoryCountDate date);")
-        # icp.db_con.commit()
-        # for row in crs.execute("Select name, sql From sqlite_master Where type='table;'"):
-        #     print(row)
-        # icp.db_con.commit()
-        #
-        # # Test SQL Transactions
-        # icp.execute_sql_code(icp.build_ins_code(inv_count_id=11101011, inv_count_date='2019-02-14')).close()
-        # for row in icp.execute_sql_code(icp.build_sel_code()):
-        #     print(row)
-        #
-        # icp.execute_sql_code(icp.build_upd_code(inv_count_id=11101011, inv_count_date='2019-04-11')).close()
-        # for row in icp.execute_sql_code(icp.build_sel_code(inv_count_id=11101011)):
-        #     print(row)
-
-        icp.execute_sql_code(icp.build_del_code(inv_count_id=11101011)).close()
-        for row in icp.execute_sql_code(icp.build_sel_code()):
-            print(row)

@@ -1,21 +1,13 @@
+# Desc: Python 210 Final Data Object Model Classes
+# ChangeLog: (When,Who,What)
+# 2/28/19,RRoot,Created Script
 from datetime import datetime
-import re as rex
-
 
 class Product(object):
 
     def __init__(self, product_id: int, product_name: str):
-        self.product_id = product_id
-        self.product_name = product_name
-
-    def __str__(self):
-        return '{0},{1}'.format(self.product_id, self.product_name)
-
-    def __repr__(self):
-        return "{0}:[{1}]".format("Product ", str(self.__dict__()))
-
-    def __dict__(self):
-        return {"product_id": self.product_id, "product_name": self.product_name}
+        self.__product_id = product_id
+        self.__product_name = product_name
 
     @property
     def product_id(self):
@@ -27,8 +19,7 @@ class Product(object):
             raise TypeError("Requires integer!")
         if product_id <= 0:
             raise ValueError("Requires value greater than zero!")
-        else:
-            self.__product_id = product_id
+        else: self.__product_id = product_id
 
     @property
     def product_name(self):
@@ -38,80 +29,92 @@ class Product(object):
     def product_name(self, product_name):
         self.__product_name = str(product_name).strip()
 
+    def __str__(self):
+        return '{0},{1}'.format(self.product_id, self.product_name)
+
+    def __repr__(self):
+        return "{0}:[{1}]".format("Product",str(self.__dict__()))
+
+    def __dict__(self):
+        return {"product_id": self.product_id, "product_name": self.product_name}
+
+    #Comparisons
+    __comparison_err_message = "One or both are not Product objects!"
+
+    def __eq__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError(self.__comparison_err_message)
+        return self.product_id == other.product_id and self.product_name == other.product_name
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __gt__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError(self.__comparison_err_message)
+        return self.product_id > other.product_id
+
+    def __lt__(self, other):
+        return not self.__gt__(other)
+
+    def __ge__(self, other):
+        if not isinstance(other, Product):
+            raise TypeError(self.__comparison_err_message)
+        return self.product_id >= other.product_id
+
+    def __le__(self, other):
+        return not self.__ge__(other)
+
 
 class InventoryCount(object):
 
-    def __init__(self, product: Product, count: int):
-        ""
-        self.product = product
-        self.count = count
+    def __init__(self, inventory_id: int, product_id: int, product_inventory_count: int):
+        self.inventory_id = inventory_id
+        self.__product_id = product_id
+        self.__count = product_inventory_count
 
-    def __str__(self):
-        return '{0},{1},{2}'.format(self.product.product_id, self.product.product_name, self.count)
-
-    def __repr__(self):
-        return "{i}:[{p}, {c}:{cv}]".format(i="InventoryCount",
-                                            p=self.product.__repr__(),
-                                            c="count",
-                                            cv=self.count)
-
-    # Add properties and validation
-    # product is Product
     @property
-    def product(self):
-        return self.__product
+    def product_id(self):
+        return self.__product_id
 
-    @product.setter
-    def product(self, product):
-        self.__product = product
+    @product_id.setter
+    def product(self, product_id: int):
+        self.__product = product_id
 
-    # count >= 0
     @property
-    def count(self):
+    def product_inventory_count(self):
         return self.__count
 
-    @count.setter
-    def count(self, count):
-        if type(count) is not int:
-            raise TypeError("Requires integer!")
-        if count < 0:
-            raise ValueError("Requires value greater than or equal to zero!")
-        else:
-            self.__count = count
+    @product_inventory_count.setter
+    def product_inventory_count(self, count: int):
+        __count = count
+
+    def __str__(self):
+        return f'{self.inventory_id},{self.product_id},{self.product_inventory_count}'
+
+    def __repr__(self):
+        return f'{self.inventory_id},{self.product_id},{self.product_inventory_count}'
+
+    # def __dict__(self):
+    #     return {"product_id": self.product.product_id,
+    #             "product_name": self.product.product_name,
+    #             "product_inventory_count": self.product_inventory_count}
 
 
 class Inventory(object):
     def __init__(self, inventory_id: int, inventory_date: datetime.date, inventory_counts: InventoryCount = [None]):
-        self.inventory_id = inventory_id
-        self.inventory_date = inventory_date
+        self.__inventory_id = inventory_id
+        self.__inventory_date = inventory_date
         if inventory_counts is not None:
-            self.inventory_counts = inventory_counts
+            self.__inventory_counts = inventory_counts
 
-    def __str__(self):
-        return '{0},{1},{2}'.format(self.inventory_id, self.inventory_date, self.inventory_counts)
-
-    def __repr__(self):
-        return "{i}: [{idt} {idtv}, {iid} {iidv}, {ic}]:".format(i="Inventory",
-                                                                   idt='Inventory Date:',
-                                                                   idtv=self.inventory_date,
-                                                                   iid='Inventory ID:',
-                                                                   iidv=self.inventory_id,
-                                                                   ic=self.inventory_counts.__repr__())
-
-    # Add properties and validation
     @property
     def inventory_id(self):
         return self.__inventory_id
 
     @inventory_id.setter
     def inventory_id(self, inventory_id):
-        # inventory_id > 0
-        if type(inventory_id) is not int:
-            raise TypeError("Requires integer!")
-        if inventory_id <= 0:
-            raise ValueError("Requires value greater than zero!")
-        else:
-            self.__inventory_id = inventory_id
+        __inventory_id = inventory_id
 
     @property
     def inventory_date(self):
@@ -119,68 +122,25 @@ class Inventory(object):
 
     @inventory_date.setter
     def inventory_date(self, inventory_date):
-        # date is datetime type
-        if rex.match(r"\d\d\d\d-\d\d-\d\d", str(inventory_date)) is None:
-            raise ValueError('Requires date format YYYY-MM-DD')
-        else:
-            self.__inventory_date = inventory_date
+        __inventory_date = inventory_date
 
-    # inventory_counts is Inventory_Count object
     @property
     def inventory_counts(self):
         return self.__inventory_counts
 
     @inventory_counts.setter
-    def inventory_counts(self, inventory_counts):
-        if type(inventory_counts) is not int:
-            raise TypeError("Requires integer!")
-        if inventory_counts <= 0:
-            raise ValueError("Requires value greater than or equal to zero!")
-        else:
-            self.__inventory_counts = inventory_counts
+    def inventory_counts(self, inventory_counts=[None]):
+        self.__inventory_counts.append = inventory_counts
+
+    def __str__(self):
+        return f'{self.inventory_id},{self.inventory_date}'
+
+    def __repr__(self):
+        return f'{self.inventory_id},{self.inventory_date}'
+
+    # def __dict__(self):
+    #     return {"product_id": self.product.product_id,
+    #             "product_name": self.product.product_name,
+    #             "product_inventory_count": self.product_inventory_count}
 
 
-if __name__ == '__main__':
-    p1 = Product(11101003, "ProdA")
-    p2 = Product(11101004, "ProdB")
-
-    ic = InventoryCount(p1, 420)
-
-    # inv = Inventory(366, '2019-04-11', ic)
-    print(str(ic))
-
-    # p1 = Product(11101011, "ProdA")
-    # p2 = Product(11101012, "ProdB")
-    # ic1 = InventoryCount(p1, 15)
-    # print(ic1)
-    # print(repr(ic1))
-
-    # p1 = Product(11101011, "Mouse")
-    # p2 = Product(11101012, "Keyboard")
-    # print(p1)
-
-    # p1 = Product(1110101, "ProdA")
-    # p2 = Product(1110102, "ProdB")
-    # ic1 = InventoryCount(p1, 15)
-    # ic2 = InventoryCount(p2, 45)
-    # invJan0119 = Inventory(1, '2020-01-01', [ic1, ic2])
-    # for ic in invJan0119.inventory_counts:
-    #     print('Jan 2019 -', ic.product.product_name, ' = ', ic.count)
-    #
-
-    # try:
-    #     Product('A', "Alpha")
-    # except Exception as e:
-    #     print(e)
-    # try:
-    #     Product(1.2, "Float")
-    # except Exception as e:
-    #     print(e)
-    # try:
-    #     Product(0, "Zero")
-    # except Exception as e:
-    #     print(e)
-    # try:
-    #     Product(-1, "LT Zero")
-    # except Exception as e:
-    #     print(e)
